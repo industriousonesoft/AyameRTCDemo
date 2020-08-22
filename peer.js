@@ -13,7 +13,7 @@ const peerConnectionConfig = {
 
 const isSSL = location.protocol === 'https:';
 const wsProtocol = isSSL ? 'wss://' : 'ws://';
-const wsUrl = wsProtocol + location.host + '/ws';
+const wsUrl = wsProtocol + 'ayame-lite.shiguredo.jp/signaling';
 const ws = new WebSocket(wsUrl);
 ws.onopen = onWsOpen.bind();
 ws.onerror = onWsError.bind();
