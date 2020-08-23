@@ -252,14 +252,14 @@ async function setAnswer(sessionDescription) {
 
 
 function sendDataChannel() {
-  let textData = dataTextInput.value;
-  if (textData.length == 0) {
+  let text = dataTextInput.value;
+  if (text.length == 0) {
     return;
   }
   if (dataChannel == null || dataChannel.readyState != "open") {
     return;
   }
-  dataChannel.send(new TextEncoder().encode(textData));
+  dataChannel.send(text);
   dataTextInput.value = "";
 }
 
