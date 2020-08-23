@@ -117,6 +117,12 @@ function sendIceCandidate(candidate) {
 
 function prepareNewConnection() {
   console.log('prepare new peer connection.');
+  let options = {
+    'ordered': true,
+    'negotiated': true,
+    'maxRetransmits': -1,
+    'maxPacketLifeTime': -1
+  }
   const peer = new RTCPeerConnection(peerConnectionConfig);
   dataChannel = peer.createDataChannel("MyDataChannel");
   
