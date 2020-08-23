@@ -26,7 +26,7 @@ ws.onerror = onWsError.bind();
 ws.onmessage = onWsMessage.bind();
 
 function onWsError(error){
-  myLogErr('ws onerror() ERROR:', error);
+  myLogErr('ws onerror() ERROR:' + error);
 }
 
 function onWsOpen(event) {
@@ -39,24 +39,24 @@ function onWsClose(event) {
 }
 
 function onWsMessage(event) {
-  myLog('ws onmessage() data:', event.data);
+  myLog('ws onmessage() data:' + event.data);
   const message = JSON.parse(event.data);
   if (message.type === 'offer') {
     myLog('Received offer ...');
     const offer = new RTCSessionDescription(message);
-    myLog('offer: ', offer);
+    myLog('offer: ' + offer);
     setOffer(offer);
   }
   else if (message.type === 'answer') {
     myLog('Received answer ...');
     const answer = new RTCSessionDescription(message);
-    myLog('answer: ', answer);
+    myLog('answer: ' + answer);
     setAnswer(answer);
   }
   else if (message.type === 'candidate') {
     myLog('Received ICE candidate ...');
     const candidate = new RTCIceCandidate(message.ice);
-    myLog('candidate: ', candidate);
+    myLog('candidate: ' + candidate);
     if (hasReceivedSdp) {
       addIceCandidate(candidate);
     } else {
@@ -200,12 +200,12 @@ async function makeOffer() {
       'offerToReceiveAudio': false,
       'offerToReceiveVideo': false
     })
-    myLog('createOffer() success in promise, SDP=', sessionDescription.sdp);
+    myLog('createOffer() success in promise, SDP=' + sessionDescription.sdp);
     await peerConnection.setLocalDescription(sessionDescription);
     myLog('setLocalDescription() success in promise');
     sendSdp(peerConnection.localDescription);
   } catch (error) {
-    myLogErr('makeOffer() ERROR:', error);
+    myLogErr('makeOffer() ERROR:' + error);
   }
 }
 
@@ -223,7 +223,7 @@ async function makeAnswer() {
     sendSdp(peerConnection.localDescription);
     drainCandidate();
   } catch (error) {
-    myLogErr('makeAnswer() ERROR:', error);
+    myLogErr('makeAnswer() ERROR:' + error);
   }
 }
 
@@ -240,7 +240,7 @@ async function setOffer(sessionDescription) {
       myLog('setRemoteDescription(offer) success in promise');
       makeAnswer();
   }catch(error) {
-      myLogErr('setRemoteDescription(offer) ERROR: ', error);
+      myLogErr('setRemoteDescription(offer) ERROR: ' + error);
   }
 }
 
@@ -254,7 +254,7 @@ async function setAnswer(sessionDescription) {
     myLog('setRemoteDescription(answer) success in promise');
     drainCandidate();
   } catch(error) {
-    myLogErr('setRemoteDescription(answer) ERROR: ', error);
+    myLogErr('setRemoteDescription(answer) ERROR: ' + error);
   }
 }
 
