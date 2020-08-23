@@ -200,8 +200,9 @@ async function makeAnswer() {
 
 // offer sdp を生成する
 function setOffer(sessionDescription) {
-  if (peerConnection != null) {
-    console.error('peerConnection already exists!');
+  if (!peerConnection) {
+    console.error('peerConnection DOES NOT exist!');
+    return;
   }
   peerConnection.onnegotiationneeded = async function () {
     try{
