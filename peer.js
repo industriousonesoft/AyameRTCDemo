@@ -25,6 +25,8 @@ ws.onclose = onWsClose.bind();
 ws.onerror = onWsError.bind();
 ws.onmessage = onWsMessage.bind();
 
+clearUI();
+
 function onWsError(error){
   myLogErr('ws onerror() ERROR:' + error);
 }
@@ -300,6 +302,12 @@ function myLog(text) {
 function myLogErr(text) {
   logTextInput.value += "\n Error => " + text;
   console.error(text);
+}
+
+function clearUI() {
+  logTextInput.value = "";
+  sendTextInput.value = "";
+  receivedTextInput.value = "";
 }
 
 
