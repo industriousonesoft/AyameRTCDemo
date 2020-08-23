@@ -10,7 +10,7 @@ const peerConnectionConfig = {
   'iceServers': iceServers
 };
 
-const roomId = 'Horseman';
+const roomId = 'horseman';
 const clientId = 'icebergcwp1990';
 var isInitiator = false;
 
@@ -103,6 +103,7 @@ function disconnect() {
       return;
     }
   }
+  ws.close();
   console.log('peerConnection is closed.');
   console.groupEnd();
 }
@@ -131,6 +132,7 @@ function sendIceCandidate(candidate) {
 }
 
 function prepareNewConnection() {
+  console.log('prepare new peer connection.');
   const peer = new RTCPeerConnection(peerConnectionConfig);
   dataChannel = peer.createDataChannel("MyDataChannel");
   
@@ -205,7 +207,7 @@ async function makeAnswer() {
 
 // offer sdp を生成する
 function setOffer(sessionDescription) {
-  if (peerConnection) {
+  if (peerConnection != null) {
     console.error('peerConnection already exists!');
   }
   const peerConnection = prepareNewConnection();
