@@ -131,10 +131,7 @@ function prepareNewConnection() {
   if (isInitiator === true) {
     let options = {
     'ordered': true,
-    'negotiated': true,
-    'maxRetransmits': -1,
-    'maxPacketLifeTime': -1,
-    'id': -1
+    'negotiated': true
     };
     dataChannel = peer.createDataChannel("MyDataChannel", options);
     configeDataChannel(dataChannel);
