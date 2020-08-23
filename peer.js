@@ -200,11 +200,13 @@ async function makeAnswer() {
 
 // offer sdp を生成する
 function setOffer(sessionDescription) {
+  console.log('Set offser...');
   if (!peerConnection) {
     console.error('peerConnection DOES NOT exist!');
     return;
   }
   try{
+      console.log('will setRemoteDescription...');
       await peerConnection.setRemoteDescription(sessionDescription);
       console.log('setRemoteDescription(offer) success in promise');
       makeAnswer();
