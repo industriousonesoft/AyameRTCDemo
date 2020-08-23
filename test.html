@@ -8,11 +8,21 @@
   <body>
     <h3>Ayame Peer</h3>
     <div>
+      <label>Controls</label>
       <input type="button" onclick="disconnect();" value="Leave">
     </div>
     <div>
+      <label>Received Field</label>
+      <textarea id="received_text" rows="4" cols="40" ></textarea>
+    </div>
+    <div>
+      <label>Input Field</label>
       <input type="text" id="data_text">
       <input type="button" onclick="sendDataChannel();" value="Send">
+    </div>
+    <div>
+      <label>Logs</label>
+      <textarea id="log_text" rows="10" cols="40" ></textarea>
     </div>
     <script type='text/javascript' src='./peer.js'></script>
   </body>
