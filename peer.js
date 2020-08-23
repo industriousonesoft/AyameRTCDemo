@@ -1,4 +1,6 @@
-const dataTextInput = document.getElementById('data_text');
+const sendTextInput = document.getElementById('input_text');
+const receivedTextInput = document.getElementById('received_text');
+const logTextInput = document.getElementById('log_text');
 let peerConnection = null;
 let dataChannel = null;
 let candidates = [];
@@ -24,37 +26,37 @@ ws.onerror = onWsError.bind();
 ws.onmessage = onWsMessage.bind();
 
 function onWsError(error){
-  console.error('ws onerror() ERROR:', error);
+  myLogErr('ws onerror() ERROR:', error);
 }
 
 function onWsOpen(event) {
-  console.log('ws open()');
+  myLog('ws open()');
   register();
 }
 
 function onWsClose(event) {
-  console.log('ws close()');
+  myLog('ws close()');
 }
 
 function onWsMessage(event) {
-  console.log('ws onmessage() data:', event.data);
+  myLog('ws onmessage() data:', event.data);
   const message = JSON.parse(event.data);
   if (message.type === 'offer') {
-    console.log('Received offer ...');
+    myLog('Received offer ...');
     const offer = new RTCSessionDescription(message);
-    console.log('offer: ', offer);
+    myLog('offer: ', offer);
     setOffer(offer);
   }
   else if (message.type === 'answer') {
-    console.log('Received answer ...');
+    myLog('Received answer ...');
     const answer = new RTCSessionDescription(message);
-    console.log('answer: ', answer);
+    myLog('answer: ', answer);
     setAnswer(answer);
   }
   else if (message.type === 'candidate') {
-    console.log('Received ICE candidate ...');
+    myLog('Received ICE candidate ...');
     const candidate = new RTCIceCandidate(message.ice);
-    console.log('candidate: ', candidate);
+    myLog('candidate: ', candidate);
     if (hasReceivedSdp) {
       addIceCandidate(candidate);
     } else {
@@ -62,7 +64,7 @@ function onWsMessage(event) {
     }
   }
   else if (message.type === 'close') {
-    console.log('peer connection is closed ...');
+    myLog('peer connection is closed ...');
   }else if (message.type === 'ping') {
     doSendPong();
   }else if (message.type === 'accept') {
@@ -83,12 +85,12 @@ function disconnect() {
         const message = JSON.stringify({ type: 'close' });
         ws.send(message);
       }
-      console.log('sending close message');
+      myLog('sending close message');
       return;
     }
   }
   ws.close();
-  console.log('peerConnection is closed.');
+  myLog('peerConnection is closed.');
   console.groupEnd();
 }
 
@@ -104,19 +106,19 @@ function addIceCandidate(candidate) {
   if (peerConnection) {
     peerConnection.addIceCandidate(candidate);
   }else {
-    console.error('PeerConnection does not exist!');
+    myLogErr('PeerConnection does not exist!');
   }
 }
 
 function sendIceCandidate(candidate) {
-  console.log('---sending ICE candidate ---');
+  myLog('---sending ICE candidate ---');
   const message = JSON.stringify({ type: 'candidate', ice: candidate });
-  console.log('sending candidate=' + message);
+  myLog('sending candidate=' + message);
   ws.send(message);
 }
 
 function prepareNewConnection() {
-  console.log('prepare new peer connection.');
+  myLog('prepare new peer connection.');
   
   const peer = new RTCPeerConnection(peerConnectionConfig, {
     optional: [{
@@ -137,18 +139,18 @@ function prepareNewConnection() {
   }
   
   peer.onicecandidate = (event) => {
-    console.log('-- peer.onicecandidate()');
+    myLog('-- peer.onicecandidate()');
     if (event.candidate) {
-      console.log(event.candidate);
+      myLog(event.candidate);
       sendIceCandidate(event.candidate);
     } else {
-      console.log('empty ice event');
+      myLog('empty ice event');
     }
   };
 
   peer.oniceconnectionstatechange = () => {
-    console.log('-- peer.oniceconnectionstatechange()');
-    console.log('ICE connection Status has changed to ' + peer.iceConnectionState);
+    myLog('-- peer.oniceconnectionstatechange()');
+    myLog('ICE connection Status has changed to ' + peer.iceConnectionState);
     switch (peer.iceConnectionState) {
       case 'closed':
       case 'failed':
@@ -159,7 +161,7 @@ function prepareNewConnection() {
 
   peer.ondatachannel = (event) => {
     dataChannel = event.channel;
-    console.log('New data channel..');
+    myLog('New data channel..');
     configeDataChannel(dataChannel);
   };
   
@@ -167,27 +169,28 @@ function prepareNewConnection() {
 }
 
 function configeDataChannel(dc) {
-  dc.onclose = () => console.log('dataChannel => has closed');
-  dc.onopen = () => console.log('dataChannel => has opened');
+  dc.onclose = () => myLog('dataChannel => has closed');
+  dc.onopen = () => myLog('dataChannel => has opened');
   dc.onmessage = function (event) {
-    console.log("dataChannel => received message: " + event.data);
+    myLog("dataChannel => received message: " + event.data);
+    receivedTextInput.value += "\n" + event.data;
   };
 }
 
 function sendSdp(sessionDescription) {
-  console.log('---sending sdp ---');
+  myLog('---sending sdp ---');
   const message = JSON.stringify(sessionDescription);
-  console.log('sending SDP=' + message);
+  myLog('sending SDP=' + message);
   ws.send(message);
 }
 
 function startSignaling() {
   peerConnection = prepareNewConnection();
   if (isInitiator === true) {
-    console.log('make Offer');
+    myLog('make Offer');
     makeOffer();
   }else {
-    console.log('I am an Answer');
+    myLog('I am an Answer');
   }
 }
 
@@ -197,67 +200,67 @@ async function makeOffer() {
       'offerToReceiveAudio': false,
       'offerToReceiveVideo': false
     })
-    console.log('createOffer() success in promise, SDP=', sessionDescription.sdp);
+    myLog('createOffer() success in promise, SDP=', sessionDescription.sdp);
     await peerConnection.setLocalDescription(sessionDescription);
-    console.log('setLocalDescription() success in promise');
+    myLog('setLocalDescription() success in promise');
     sendSdp(peerConnection.localDescription);
   } catch (error) {
-    console.error('makeOffer() ERROR:', error);
+    myLogErr('makeOffer() ERROR:', error);
   }
 }
 
 async function makeAnswer() {
-  console.log('sending Answer. Creating remote session description...');
+  myLog('sending Answer. Creating remote session description...');
   if (!peerConnection) {
-    console.error('peerConnection DOES NOT exist!');
+    myLogErr('peerConnection DOES NOT exist!');
     return;
   }
   try {
     const sessionDescription = await peerConnection.createAnswer();
-    console.log('createAnswer() success in promise');
+    myLog('createAnswer() success in promise');
     await peerConnection.setLocalDescription(sessionDescription);
-    console.log('setLocalDescription() success in promise');
+    myLog('setLocalDescription() success in promise');
     sendSdp(peerConnection.localDescription);
     drainCandidate();
   } catch (error) {
-    console.error('makeAnswer() ERROR:', error);
+    myLogErr('makeAnswer() ERROR:', error);
   }
 }
 
 // offer sdp を生成する
 async function setOffer(sessionDescription) {
-  console.log('Set offser...');
+  myLog('Set offser...');
   if (!peerConnection) {
-    console.error('peerConnection DOES NOT exist!');
+    myLogErr('peerConnection DOES NOT exist!');
     return;
   }
   try{
-      console.log('will setRemoteDescription...');
+      myLog('will setRemoteDescription...');
       await peerConnection.setRemoteDescription(sessionDescription);
-      console.log('setRemoteDescription(offer) success in promise');
+      myLog('setRemoteDescription(offer) success in promise');
       makeAnswer();
   }catch(error) {
-      console.error('setRemoteDescription(offer) ERROR: ', error);
+      myLogErr('setRemoteDescription(offer) ERROR: ', error);
   }
 }
 
 async function setAnswer(sessionDescription) {
   if (!peerConnection) {
-    console.error('peerConnection DOES NOT exist!');
+    myLogErr('peerConnection DOES NOT exist!');
     return;
   }
   try {
     await peerConnection.setRemoteDescription(sessionDescription);
-    console.log('setRemoteDescription(answer) success in promise');
+    myLog('setRemoteDescription(answer) success in promise');
     drainCandidate();
   } catch(error) {
-    console.error('setRemoteDescription(answer) ERROR: ', error);
+    myLogErr('setRemoteDescription(answer) ERROR: ', error);
   }
 }
 
 
 function sendDataChannel() {
-  let text = dataTextInput.value;
+  let text = sendTextInput.value;
   if (text.length == 0) {
     return;
   }
@@ -265,7 +268,7 @@ function sendDataChannel() {
     return;
   }
   dataChannel.send(text);
-  dataTextInput.value = "";
+  sendTextInput.value = "";
 }
 
 //Signaling
@@ -279,7 +282,7 @@ async function register() {
     environment: 'Ayame JS env'
   };
   const message = JSON.stringify(json);
-  console.log('register JSON=' + message);
+  myLog('register JSON=' + message);
   ws.send(message);
 }
 
@@ -287,6 +290,16 @@ async function doSendPong() {
   let json = {type: 'pong'};
   const message = JSON.stringify(json);
   ws.send(message);  
+}
+
+function myLog(text) {
+  logTextInput.value += "\n" + text;
+  console.log(text);
+}
+
+function myLogErr(text) {
+  logTextInput.value += "\n Error => " + text;
+  console.error(text);
 }
 
 
