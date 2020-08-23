@@ -199,7 +199,7 @@ async function makeAnswer() {
 }
 
 // offer sdp を生成する
-function setOffer(sessionDescription) {
+async function setOffer(sessionDescription) {
   console.log('Set offser...');
   if (!peerConnection) {
     console.error('peerConnection DOES NOT exist!');
