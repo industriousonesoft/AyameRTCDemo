@@ -117,14 +117,19 @@ function sendIceCandidate(candidate) {
 
 function prepareNewConnection() {
   console.log('prepare new peer connection.');
-  let options = {
+  
+  const peer = new RTCPeerConnection(peerConnectionConfig);
+
+  if (isInitiator === true) {
+    let options = {
     'ordered': true,
     'negotiated': true,
     'maxRetransmits': -1,
     'maxPacketLifeTime': -1
+    };
+    dataChannel = peer.createDataChannel("MyDataChannel", options);
+    configeDataChannel(dataChannel);
   }
-  const peer = new RTCPeerConnection(peerConnectionConfig);
-  dataChannel = peer.createDataChannel("MyDataChannel");
   
   peer.onicecandidate = (event) => {
     console.log('-- peer.onicecandidate()');
@@ -147,11 +152,21 @@ function prepareNewConnection() {
     }
   };
 
-  dataChannel.onmessage = function (event) {
-    console.log("Got Data Channel Message:", new TextDecoder().decode(event.data));
+  peer.ondatachannel = (event) => {
+    dataChannel = event.channel;
+    console.log('New data channel..');
+    configeDataChannel(dataChannel);
   };
   
   return peer;
+}
+
+function configeDataChannel(dc) {
+  dc.onclose = () => console.log('dataChannel => has closed');
+  dc.onopen = () => console.log('dataChannel => has opened');
+  dc.onmessage = function (event) {
+    console.log("dataChannel => received message:", new TextDecoder().decode(event.data));
+  };
 }
 
 function sendSdp(sessionDescription) {
