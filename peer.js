@@ -118,14 +118,20 @@ function sendIceCandidate(candidate) {
 function prepareNewConnection() {
   console.log('prepare new peer connection.');
   
-  const peer = new RTCPeerConnection(peerConnectionConfig);
+  const peer = new RTCPeerConnection(peerConnectionConfig, {
+    optional: [{
+      'RtpDataChannels': true,
+      'DtlsSrtpKeyAgreement': true
+    }]
+  });
 
   if (isInitiator === true) {
     let options = {
     'ordered': true,
     'negotiated': true,
     'maxRetransmits': -1,
-    'maxPacketLifeTime': -1
+    'maxPacketLifeTime': -1,
+    'id': -1
     };
     dataChannel = peer.createDataChannel("MyDataChannel", options);
     configeDataChannel(dataChannel);
