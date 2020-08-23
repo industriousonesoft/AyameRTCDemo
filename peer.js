@@ -10,12 +10,16 @@ const peerConnectionConfig = {
   'iceServers': iceServers
 };
 
+const roomId = 'Horseman';
+const clientId = 'icebergcwp1990';
+var isInitiator = false;
 
 const isSSL = location.protocol === 'https:';
 const wsProtocol = isSSL ? 'wss://' : 'ws://';
 const wsUrl = wsProtocol + 'ayame-lite.shiguredo.jp/signaling';
 const ws = new WebSocket(wsUrl);
 ws.onopen = onWsOpen.bind();
+ws.onclose = onWsClose.bind();
 ws.onerror = onWsError.bind();
 ws.onmessage = onWsMessage.bind();
 
@@ -25,7 +29,13 @@ function onWsError(error){
 
 function onWsOpen(event) {
   console.log('ws open()');
+  register();
 }
+
+function onWsClose(event) {
+  console.log('ws close()');
+}
+
 function onWsMessage(event) {
   console.log('ws onmessage() data:', event.data);
   const message = JSON.parse(event.data);
@@ -53,14 +63,25 @@ function onWsMessage(event) {
   }
   else if (message.type === 'close') {
     console.log('peer connection is closed ...');
+  }else if (message.type === 'ping') {
+    doSendPong();
+  }else if (message.type === 'accept') {
+    if (message.isExistUser === true) {
+      isInitiator = true;
+    }
   }
 }
 
 function connect() {
   console.group();
   if (!peerConnection) {
-    console.log('make Offer');
-    makeOffer();
+    if (isInitiator === true) {
+      console.log('make Offer');
+      makeOffer();
+    }else {
+      console.log('I am an Answer');
+    }
+    
   }
   else {
     console.warn('peer connection already exists.');
@@ -97,8 +118,7 @@ function drainCandidate() {
 function addIceCandidate(candidate) {
   if (peerConnection) {
     peerConnection.addIceCandidate(candidate);
-  }
-  else {
+  }else {
     console.error('PeerConnection does not exist!');
   }
 }
@@ -226,3 +246,26 @@ function sendDataChannel() {
   dataChannel.send(new TextEncoder().encode(textData));
   dataTextInput.value = "";
 }
+
+//Signaling
+async function register() {
+  let json = {
+    type: 'register',
+    clientId: clientId,
+    roomId: roomId,
+    ayameClient: 'Ayame webrtc JS client v1.0',
+    libwebrtc: 'Ayame JS build',
+    environment: 'Ayame JS env'
+  };
+  const message = JSON.stringify(json);
+  console.log('register JSON=' + message);
+  ws.send(message);
+}
+
+async function doSendPong() {
+  let json = {type: 'pong'};
+  const message = JSON.stringify(json);
+  ws.send(message);  
+}
+
+
