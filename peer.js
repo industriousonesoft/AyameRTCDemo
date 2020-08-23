@@ -120,8 +120,7 @@ function prepareNewConnection() {
   
   const peer = new RTCPeerConnection(peerConnectionConfig, {
     optional: [{
-      'RtpDataChannels': true,
-      'DtlsSrtpKeyAgreement': true
+      'RtpDataChannels': true
     }]
   });
 
