@@ -69,24 +69,8 @@ function onWsMessage(event) {
     if (message.isExistUser === true) {
       isInitiator = true;
     }
+    startSignaling();
   }
-}
-
-function connect() {
-  console.group();
-  if (!peerConnection) {
-    if (isInitiator === true) {
-      console.log('make Offer');
-      makeOffer();
-    }else {
-      console.log('I am an Answer');
-    }
-    
-  }
-  else {
-    console.warn('peer connection already exists.');
-  }
-  console.groupEnd();
 }
 
 function disconnect() {
@@ -171,8 +155,17 @@ function sendSdp(sessionDescription) {
   ws.send(message);
 }
 
-async function makeOffer() {
+function startSignaling() {
   peerConnection = prepareNewConnection();
+  if (isInitiator === true) {
+    console.log('make Offer');
+    makeOffer();
+  }else {
+    console.log('I am an Answer');
+  }
+}
+
+async function makeOffer() {
   try {
     const sessionDescription = await peerConnection.createOffer({
       'offerToReceiveAudio': false,
