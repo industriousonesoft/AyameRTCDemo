@@ -204,14 +204,12 @@ function setOffer(sessionDescription) {
     console.error('peerConnection DOES NOT exist!');
     return;
   }
-  peerConnection.onnegotiationneeded = async function () {
-    try{
+  try{
       await peerConnection.setRemoteDescription(sessionDescription);
       console.log('setRemoteDescription(offer) success in promise');
       makeAnswer();
-    }catch(error) {
+  }catch(error) {
       console.error('setRemoteDescription(offer) ERROR: ', error);
-    }
   }
 }
 
