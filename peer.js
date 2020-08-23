@@ -203,7 +203,6 @@ function setOffer(sessionDescription) {
   if (peerConnection != null) {
     console.error('peerConnection already exists!');
   }
-  const peerConnection = prepareNewConnection();
   peerConnection.onnegotiationneeded = async function () {
     try{
       await peerConnection.setRemoteDescription(sessionDescription);
