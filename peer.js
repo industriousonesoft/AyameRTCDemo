@@ -131,7 +131,7 @@ function prepareNewConnection() {
   if (isInitiator === true) {
     let options = {
     'ordered': true,
-    'negotiated': true
+    'negotiated': false //if set to true, must set id property
     };
     dataChannel = peer.createDataChannel("MyDataChannel", options);
     configeDataChannel(dataChannel);
