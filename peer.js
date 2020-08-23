@@ -170,7 +170,7 @@ function configeDataChannel(dc) {
   dc.onclose = () => console.log('dataChannel => has closed');
   dc.onopen = () => console.log('dataChannel => has opened');
   dc.onmessage = function (event) {
-    console.log("dataChannel => received message:", new TextDecoder().decode(event.data));
+    console.log("dataChannel => received message: " + event.data);
   };
 }
 
