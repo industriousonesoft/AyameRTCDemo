@@ -115,6 +115,16 @@ function sendIceCandidate(candidate) {
   ws.send(message);
 }
 
+function startSignaling(iceServers) {
+  peerConnection = prepareNewConnection(iceServers);
+  if (isInitiator === true) {
+    myLog('make Offer');
+    makeOffer();
+  }else {
+    myLog('I am an Answer');
+  }
+}
+
 function prepareNewConnection(iceServers) {
   myLog('prepare new peer connection.');
 
@@ -186,16 +196,6 @@ function sendSdp(sessionDescription) {
   const message = JSON.stringify(sessionDescription);
   myLog('sending SDP=' + message);
   ws.send(message);
-}
-
-function startSignaling(iceServers) {
-  peerConnection = prepareNewConnection();
-  if (isInitiator === true) {
-    myLog('make Offer');
-    makeOffer();
-  }else {
-    myLog('I am an Answer');
-  }
 }
 
 async function makeOffer() {
