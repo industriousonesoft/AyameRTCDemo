@@ -5,12 +5,6 @@ let peerConnection = null;
 let dataChannel = null;
 let candidates = [];
 let hasReceivedSdp = false;
-// iceServer を定義
-const iceServers = [{ 'urls': 'stun:stun.l.google.com:19302' }];
-// peer connection の 設定
-const peerConnectionConfig = {
-  'iceServers': iceServers
-};
 
 const roomId = 'horseman';
 const clientId = 'icebergcwp1990';
@@ -70,10 +64,12 @@ function onWsMessage(event) {
   }else if (message.type === 'ping') {
     doSendPong();
   }else if (message.type === 'accept') {
-    if (message.isExistUser === true) {
+    if (message.isExistUser === 1) {
       isInitiator = true;
+    }else {
+      isInitiator = false;
     }
-    startSignaling();
+    startSignaling(message.iceServers);
   }
 }
 
@@ -119,8 +115,17 @@ function sendIceCandidate(candidate) {
   ws.send(message);
 }
 
-function prepareNewConnection() {
+function prepareNewConnection(iceServers) {
   myLog('prepare new peer connection.');
+
+  var peerConnectionConfig = {
+    'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+  };
+
+  if (iceServers != null) {
+    peerConnectionConfig.iceServers = iceServers;
+    myLog("Received iceServers: " + iceServers);
+  }
   
   const peer = new RTCPeerConnection(peerConnectionConfig, {
     optional: [{
@@ -183,7 +188,7 @@ function sendSdp(sessionDescription) {
   ws.send(message);
 }
 
-function startSignaling() {
+function startSignaling(iceServers) {
   peerConnection = prepareNewConnection();
   if (isInitiator === true) {
     myLog('make Offer');
