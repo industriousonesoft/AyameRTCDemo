@@ -64,7 +64,7 @@ function onWsMessage(event) {
   }else if (message.type === 'ping') {
     doSendPong();
   }else if (message.type === 'accept') {
-    if (message.isExistUser === 1) {
+    if (message.isExistUser === true) {
       isInitiator = true;
     }else {
       isInitiator = false;
