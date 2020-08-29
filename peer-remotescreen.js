@@ -1,6 +1,5 @@
 const remoteVideo = document.getElementById('remote_video');
-const sendTextInput = document.getElementById('input_text');
-const receivedTextInput = document.getElementById('received_text');
+const sendTextInput = document.getElementById('data_text');
 const logTextInput = document.getElementById('log_text');
 let peerConnection = null;
 let dataChannel = null;
@@ -222,7 +221,6 @@ function configeDataChannel(dc) {
   dc.onopen = () => myLog('dataChannel => has opened');
   dc.onmessage = function (event) {
     myLog("dataChannel => received message: " + event.data);
-    receivedTextInput.value += "\n" + event.data;
   };
 }
 
@@ -344,7 +342,6 @@ function myLogErr(text) {
 function clearUI() {
   logTextInput.value = "";
   sendTextInput.value = "";
-  receivedTextInput.value = "";
 }
 
 
