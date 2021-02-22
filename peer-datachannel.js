@@ -12,7 +12,7 @@ var isInitiator = false;
 
 const isSSL = location.protocol === 'https:';
 const wsProtocol = isSSL ? 'wss://' : 'ws://';
-const wsUrl = wsProtocol + 'ayame-lite.shiguredo.jp/signaling';
+const wsUrl = wsProtocol + 'ayame-labo.shiguredo.jp/signaling';
 const ws = new WebSocket(wsUrl);
 ws.onopen = onWsOpen.bind();
 ws.onclose = onWsClose.bind();
