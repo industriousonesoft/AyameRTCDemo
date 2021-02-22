@@ -50,9 +50,9 @@ function onWsMessage(event) {
     setAnswer(answer);
   }
   else if (message.type === 'candidate') {
-    myLog('Received ICE candidate ...');
+    myLog('Received Remote Peer ICE candidate ...');
     const candidate = new RTCIceCandidate(message.ice);
-    myLog('candidate: ' + candidate);
+    myLog('Remote Peer Candidate: ' + candidate);
     if (hasReceivedSdp) {
       addIceCandidate(candidate);
     } else {
@@ -153,9 +153,9 @@ function prepareNewConnection(iceServers) {
   }
   
   peer.onicecandidate = (event) => {
-    myLog('-- peer.onicecandidate()');
+    myLog('onicecandidate: Received Local Peer Candidate');
     if (event.candidate) {
-      myLog(event.candidate);
+      myLog('Local Peer Candidate:' + event.candidate);
       sendIceCandidate(event.candidate);
     } else {
       myLog('empty ice event');
